@@ -1,0 +1,1 @@
+FMA_small can be downloaded from [https://github.com/mdeff/fma](https://github.com/mdeff/fma)[fma_small.zip](https://os.unil.cloud.switch.ch/fma/fma_small.zip): 8,000 tracks of 30s, 8 balanced genres (GTZAN-like) (7.2 GiB)
