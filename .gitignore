@@ -1,5 +1,5 @@
-fma_train
-fma_utils
+fma_train.csv
+fma_utils.py
 
 fma/*
 .ipynb_checkpoints/*
