@@ -1,0 +1,6 @@
+fma_train
+fma_utils
+
+fma/*
+.ipynb_checkpoints/*
+__pycache__/*
