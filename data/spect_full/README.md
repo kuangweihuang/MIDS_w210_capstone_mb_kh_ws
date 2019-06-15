@@ -1,0 +1,1 @@
+Samples only.  Full mel spectrograms for fma_small dataset can be downloaded from [Google drive](https://drive.google.com/open?id=1h0RPu9RVEBO1NdPodI_H2HhKJoBpb79f).
