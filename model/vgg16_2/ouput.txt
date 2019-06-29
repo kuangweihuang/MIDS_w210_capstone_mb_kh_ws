@@ -1,0 +1,110 @@
+Directory of model parameters to be saved: ./models/vgg16_2
+
+C:\Users\kw.UNLOVEDPC\Anaconda3\envs\py3gpu-Env\lib\site-packages\ipykernel_launcher.py:163: UserWarning: Update your `Model` call to the Keras 2 API: `Model(inputs=Tensor("sp..., outputs=Tensor("de...)`
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+spect_input (InputLayer)     (None, 431, 128, 1)       0         
+_________________________________________________________________
+spect_block1_conv1 (Conv2D)  (None, 431, 128, 64)      640       
+_________________________________________________________________
+spect_block1_conv2 (Conv2D)  (None, 431, 128, 64)      36928     
+_________________________________________________________________
+spect_block1_pool (MaxPoolin (None, 215, 64, 64)       0         
+_________________________________________________________________
+spect_block2_conv1 (Conv2D)  (None, 215, 64, 128)      73856     
+_________________________________________________________________
+spect_block2_conv2 (Conv2D)  (None, 215, 64, 128)      147584    
+_________________________________________________________________
+spect_block2_pool (MaxPoolin (None, 107, 32, 128)      0         
+_________________________________________________________________
+spect_block3_conv1 (Conv2D)  (None, 107, 32, 256)      295168    
+_________________________________________________________________
+spect_block3_conv2 (Conv2D)  (None, 107, 32, 256)      590080    
+_________________________________________________________________
+spect_block3_conv3 (Conv2D)  (None, 107, 32, 256)      590080    
+_________________________________________________________________
+spect_block3_pool (MaxPoolin (None, 53, 16, 256)       0         
+_________________________________________________________________
+spect_block4_conv1 (Conv2D)  (None, 53, 16, 512)       1180160   
+_________________________________________________________________
+spect_block4_conv2 (Conv2D)  (None, 53, 16, 512)       2359808   
+_________________________________________________________________
+spect_block4_conv3 (Conv2D)  (None, 53, 16, 512)       2359808   
+_________________________________________________________________
+spect_block4_pool (MaxPoolin (None, 26, 8, 512)        0         
+_________________________________________________________________
+spect_block5_conv1 (Conv2D)  (None, 26, 8, 512)        2359808   
+_________________________________________________________________
+spect_block5_conv2 (Conv2D)  (None, 26, 8, 512)        2359808   
+_________________________________________________________________
+spect_block5_conv3 (Conv2D)  (None, 26, 8, 512)        2359808   
+_________________________________________________________________
+spect_block5_pool (MaxPoolin (None, 3, 1, 512)         0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1536)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                98368     
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 16)                1040      
+_________________________________________________________________
+dense_3 (Dense)              (None, 8)                 136       
+=================================================================
+Total params: 14,813,080
+Trainable params: 7,178,968
+Non-trainable params: 7,634,112
+_________________________________________________________________
+None
+Training...
+Train on 31970 samples, validate on 4000 samples
+Epoch 1/12
+31970/31970 [==============================] - 168s 5ms/step - loss: 3.0091 - acc: 0.3319 - val_loss: 2.5538 - val_acc: 0.4843
+
+Epoch 00001: val_acc improved from -inf to 0.48425, saving model to ./models/vgg16_2/weights.best.h5
+Epoch 2/12
+31970/31970 [==============================] - 167s 5ms/step - loss: 2.3430 - acc: 0.4671 - val_loss: 2.0789 - val_acc: 0.5280
+
+Epoch 00002: val_acc improved from 0.48425 to 0.52800, saving model to ./models/vgg16_2/weights.best.h5
+Epoch 3/12
+31970/31970 [==============================] - 167s 5ms/step - loss: 1.9621 - acc: 0.5206 - val_loss: 1.8125 - val_acc: 0.5495
+
+Epoch 00003: val_acc improved from 0.52800 to 0.54950, saving model to ./models/vgg16_2/weights.best.h5
+Epoch 4/12
+31970/31970 [==============================] - 168s 5ms/step - loss: 1.7062 - acc: 0.5542 - val_loss: 1.6562 - val_acc: 0.5460
+
+Epoch 00004: val_acc did not improve from 0.54950
+Epoch 5/12
+31970/31970 [==============================] - 166s 5ms/step - loss: 1.5313 - acc: 0.5805 - val_loss: 1.5832 - val_acc: 0.5470
+
+Epoch 00005: val_acc did not improve from 0.54950
+Epoch 6/12
+31970/31970 [==============================] - 166s 5ms/step - loss: 1.3999 - acc: 0.5978 - val_loss: 1.4678 - val_acc: 0.5650
+
+Epoch 00006: val_acc improved from 0.54950 to 0.56500, saving model to ./models/vgg16_2/weights.best.h5
+Epoch 7/12
+31970/31970 [==============================] - 166s 5ms/step - loss: 1.3035 - acc: 0.6155 - val_loss: 1.6547 - val_acc: 0.4820
+
+Epoch 00007: val_acc did not improve from 0.56500
+Epoch 8/12
+31970/31970 [==============================] - 166s 5ms/step - loss: 1.2368 - acc: 0.6251 - val_loss: 1.4830 - val_acc: 0.5380
+
+Epoch 00008: val_acc did not improve from 0.56500
+Epoch 9/12
+31970/31970 [==============================] - 166s 5ms/step - loss: 1.1698 - acc: 0.6454 - val_loss: 1.5422 - val_acc: 0.5135
+
+Epoch 00009: val_acc did not improve from 0.56500
+Epoch 10/12
+31970/31970 [==============================] - 166s 5ms/step - loss: 1.1093 - acc: 0.6610 - val_loss: 1.4749 - val_acc: 0.5390
+
+Epoch 00010: val_acc did not improve from 0.56500
+Epoch 11/12
+31970/31970 [==============================] - 167s 5ms/step - loss: 1.0536 - acc: 0.6802 - val_loss: 1.5513 - val_acc: 0.5353
+
+Epoch 00011: val_acc did not improve from 0.56500
+Epoch 12/12
+31970/31970 [==============================] - 166s 5ms/step - loss: 1.0047 - acc: 0.6937 - val_loss: 1.5019 - val_acc: 0.5305
+
+Epoch 00012: val_acc did not improve from 0.56500
