@@ -208,7 +208,7 @@ app.layout = html.Div(
 
       html.Div(id='nearest-songs',
         children=[
-        html.Label(children='Nearest 5 Songs to Current Selection: '),
+        html.Label(children='Nearest Songs to Current Selection: '),
         html.Label(id='nearest-songs-attr', children='-'),
         ]),
 
@@ -293,8 +293,8 @@ def save_sub_set_df(updated_song_info, distance, jsonified_full_set_df):
     # Getting a sorted subset of the songs which are within the distance in the slider
     sub_set_df = full_set_dist_temp[full_set_dist_temp['song_distance']
                                     <= distance].sort_values(by='song_distance')  
-    # Sending back top 5 nearest neighbors
-    jsonified_sub_set_df = sub_set_df[1:6].to_json(orient='split')
+    # Sending back the song all nearest neighbors
+    jsonified_sub_set_df = sub_set_df[:].to_json(orient='split')
 
   except:
     jsonified_sub_set_df = '-'
@@ -307,50 +307,35 @@ def save_sub_set_df(updated_song_info, distance, jsonified_full_set_df):
 @app.callback(
   Output('TSNE', 'figure'),
   [Input('replot-button', 'n_clicks')],
-  # Input('distance-slider', 'value'),
-  # Input('sub-set-df-intermediate', 'children')
-  # ],
   [State('distance-slider', 'value'),
   State('sub-set-df-intermediate', 'children'),
+  State('song-info-intermediate', 'children'),
   State('TSNE', 'figure')]
   )
-def update_TSNE(n_clicks, distance, jsonified_sub_set_df, figure):
-  print("n_clicks:", n_clicks)
-
-  if n_clicks != None:
-    nn_df = pd.read_json(jsonified_sub_set_df, orient='split')
-    song_id = nn_df.iloc[0]['track_id']
-    # Update key/value pairs in 'layout'
-    layout['title'] = f'Selected song with distance {distance}'
-    layout['scene']['camera'] = dict(center=dict(
-      x=nn_df.iloc[0]['tsne-3d-one'], 
-      y=nn_df.iloc[0]['tsne-3d-two'],
-      z=nn_df.iloc[0]['tsne-3d-three'])
-      )
-    layout['scene']['xaxis'] = dict(range=[min(nn_df['tsne-3d-one']), max(nn_df['tsne-3d-one'])])
-    layout['scene']['yaxis'] = dict(range=[min(nn_df['tsne-3d-two']), max(nn_df['tsne-3d-two'])])
-    layout['scene']['zaxis'] = dict(range=[min(nn_df['tsne-3d-three']), max(nn_df['tsne-3d-three'])])
-    layout['scene']['annotations'] = [dict(
-      showarrow=True,
-      x=nn_df.iloc[0]['tsne-3d-one'],
-      y=nn_df.iloc[0]['tsne-3d-two'],
-      z=nn_df.iloc[0]['tsne-3d-three'],
-      text="Selected Song: {}".format(nn_df.iloc[0]['track_title']),
-      # xanchor="left",
-      # xshift=10,
-      opacity=0.7,
-      arrowcolor="white",
-      )]
-    
-    print("layout:",layout)
-    print()
-    print("trace_set", trace_set)
-    print()
-
+def update_TSNE(n_clicks, distance, jsonified_sub_set_df, current_song_info, figure):
+  try:
+    if (n_clicks != None) & (current_song_info != '-'):
+      nn_df = pd.read_json(jsonified_sub_set_df, orient='split')
+      song_id = nn_df.iloc[0]['track_id']
+      # Update key/value pairs in 'layout'
+      layout['title'] = f'Selected song with distance {distance}'
+      layout['scene']['xaxis'] = dict(range=[min(nn_df['tsne-3d-one']), max(nn_df['tsne-3d-one'])])
+      layout['scene']['yaxis'] = dict(range=[min(nn_df['tsne-3d-two']), max(nn_df['tsne-3d-two'])])
+      layout['scene']['zaxis'] = dict(range=[min(nn_df['tsne-3d-three']), max(nn_df['tsne-3d-three'])])
+      layout['scene']['annotations'] = [dict(
+        showarrow=True,
+        x=nn_df.iloc[0]['tsne-3d-one'],
+        y=nn_df.iloc[0]['tsne-3d-two'],
+        z=nn_df.iloc[0]['tsne-3d-three'],
+        text="Selected Song: {}".format(nn_df.iloc[0]['track_title']),
+        # xanchor="left",
+        # xshift=10,
+        opacity=0.7,
+        arrowcolor="white",
+        )]
+  except:
+    pass
   return {'data': trace_set, 'layout': layout}
-
-
-
 
 
 if __name__ == '__main__':
