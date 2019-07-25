@@ -1,7 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 import numpy as np
 import pandas as pd
@@ -100,7 +100,7 @@ def gen_tsne_3Dplot(full_set_df, genre_dict, embedding_dir, results_file):
                                     y=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]["tsne-3d-two"],
                                     z=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]["tsne-3d-three"],
                                     mode='markers', name=genre_dict[i],
-                                    hovertemplate = "<i>Title</i>: %{text}"
+                                    hovertemplate = "<i>Track ID</i>: %{text}"
                                                     "<br><i>x</i>: %{x}"
                                                     "<br><i>y</i>: %{y}"
                                                     "<br><i>z</i>: %{z}",
@@ -108,7 +108,8 @@ def gen_tsne_3Dplot(full_set_df, genre_dict, embedding_dir, results_file):
                                                 line=dict(width=0.1),
                                                 color=genre_colors[i],
                                                 opacity=1),
-                                    text = full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_title']
+                                    text = full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_id'] 
+                                    #      full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_title']
                                    )
                       )
 
@@ -163,6 +164,7 @@ app.layout = html.Div(
             'data': trace_set,
             'layout': layout,
           }
+
         ),
 
       ]),
@@ -181,7 +183,7 @@ app.layout = html.Div(
         multi=True
         ),
       
-      html.Label(children='Euclidean distance slider'),
+      html.Label(children='Select a filter for Euclidean distance:'),
       
       html.Div(style={'margin-bottom': 40},
         children=[
@@ -196,17 +198,26 @@ app.layout = html.Div(
 
       html.Div(id='distance-slider-feedback'),
 
+      html.Button('Filter', id='replot-button'),
+
       html.Div(id='current-song',
         children=[
         html.Label(children='Current Song Selection: '),
-        html.Label(id='current-song-attr'),
-        dash_table.DataTable(id='current-song-info-table'),      
+        html.Label(id='current-song-attr', children='-'),
+        ]),
+
+      html.Div(id='nearest-songs',
+        children=[
+        html.Label(children='Nearest 5 Songs to Current Selection: '),
+        html.Label(id='nearest-songs-attr', children='-'),
         ]),
 
       ]),
 
+    # Intermediate Hidden Divs for passing data
     html.Div(id='full-set-df-intermediate', children=jsonified_full_set_df, style={'display': 'none'}),
-    html.Div(id='song-info-intermediate', style={'display': 'none'}),
+    html.Div(id='song-info-intermediate', children='-', style={'display': 'none'}),
+    html.Div(id='sub-set-df-intermediate', children=jsonified_full_set_df, style={'display': 'none'}),
 
   ])
 
@@ -217,55 +228,129 @@ app.layout = html.Div(
 # Saving the song data in intermediate div from the clicked data point on TSNE graph
 
 @app.callback(
-  Output('song-info-intermediate', 'children'),
-  [Input('TSNE', 'clickData'),
-  Input('full-set-df-intermediate', 'children')]
+  Output('current-song-attr', 'children'),
+  [Input('TSNE', 'clickData')],
+  [State('full-set-df-intermediate', 'children'),
+  State('song-info-intermediate', 'children')]
   )
-def display_song_on_click(clickData, jsonified_full_set_df):
+def display_song_on_click(clickData, jsonified_full_set_df, current_song_info):
   full_set_df = pd.read_json(jsonified_full_set_df, orient='split')
-  
-  if clickData != None:
-    click_song = clickData['points'][0]['text']
-    updated_song_info = {
-      'track_id' : full_set_df[full_set_df['track_title']==click_song]['track_id'].item(),
-      'song' : click_song,
-      'artist' : full_set_df[full_set_df['track_title']==click_song]['artist_name'].item(),
-      'genre' : full_set_df[full_set_df['track_title']==click_song]['track_genre_top'].item(),
-      }
-  else:
-    updated_song_info = {}
 
-  return json.dumps(updated_song_info)
+  if clickData != None:
+    click_song_id = clickData['points'][0]['text']
+    updated_song_info = {
+      'track_id' : click_song_id,
+      'song' : full_set_df[full_set_df['track_id']==click_song_id]['track_title'].item(),
+      'artist' : full_set_df[full_set_df['track_id']==click_song_id]['artist_name'].item(),
+      'genre' : full_set_df[full_set_df['track_id']==click_song_id]['track_genre_top'].item(),    
+      }
+    return json.dumps(updated_song_info)
+  else:
+    return current_song_info
+
 
 # Test print of clicked song info
 @app.callback(
-  Output('current-song-attr', 'children'),
-  [Input('song-info-intermediate', 'children')]
+  Output('song-info-intermediate', 'children'),
+  [Input('current-song-attr', 'children')]
   )
-def save_song_info(updated_song_info):
-  return updated_song_info
+def save_song_info(current_song_info):
+  if current_song_info != '-':
+    return current_song_info
 
       
-
 # Callback of Euclidean distance from the distance slider
 @app.callback(
     Output('distance-slider-feedback', 'children'),
     [Input('distance-slider', 'value')])
 def update_distance_slider_feedback(value):
-    return 'You have selected a Euclidean distance of "{}"'.format(value)
+    return 'You have selected a filter of distance of {}.'.format(value)
 
-# Update functions
 
-# def generate_table(dataframe, song_id=2):
-#     return html.Table(
-#         # Header
-#         [html.Tr([html.Th(col) for col in dataframe.columns])] +
+# Callback for updating a jsonified subsample of full_set_df 
+# based on selected Euclidean distance and selected song
+@app.callback(
+  [Output('sub-set-df-intermediate', 'children'),
+  Output('nearest-songs-attr', 'children')],  
+  [Input('song-info-intermediate', 'children'),
+  Input('distance-slider', 'value'),
+  Input('full-set-df-intermediate', 'children')
+  ]
+  )
+def save_sub_set_df(updated_song_info, distance, jsonified_full_set_df):
+  try:
+    song_info = json.loads(updated_song_info)
+    click_song_id = song_info['track_id']
+    full_set_dist_temp = pd.read_json(jsonified_full_set_df, orient='split')
+    
+    song_tsne = full_set_dist_temp[full_set_dist_temp['track_id']==click_song_id][['tsne-3d-one', 'tsne-3d-two', 'tsne-3d-three']]
+    full_set_tsne = full_set_dist_temp[['tsne-3d-one', 'tsne-3d-two', 'tsne-3d-three']]
+    
+    # Getting the distance between all songs and the selected song
+    full_set_dist_temp['song_distance'] = [np.linalg.norm(full_set_tsne.iloc[i]-song_tsne)
+     for i in range(full_set_tsne.shape[0])]
+    
+    # Getting a sorted subset of the songs which are within the distance in the slider
+    sub_set_df = full_set_dist_temp[full_set_dist_temp['song_distance']
+                                    <= distance].sort_values(by='song_distance')  
+    # Sending back top 5 nearest neighbors
+    jsonified_sub_set_df = sub_set_df[1:6].to_json(orient='split')
 
-#         # Body
-#         [html.Tr([
-#             html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-#         ]) for i in range(min(len(dataframe), max_rows))]
-#     )
+  except:
+    jsonified_sub_set_df = '-'
+
+  return jsonified_sub_set_df, jsonified_sub_set_df
+
+
+# Callback for updating the TSNE graph 
+# based on the selected Euclidean distance and selected song
+@app.callback(
+  Output('TSNE', 'figure'),
+  [Input('replot-button', 'n_clicks')],
+  # Input('distance-slider', 'value'),
+  # Input('sub-set-df-intermediate', 'children')
+  # ],
+  [State('distance-slider', 'value'),
+  State('sub-set-df-intermediate', 'children'),
+  State('TSNE', 'figure')]
+  )
+def update_TSNE(n_clicks, distance, jsonified_sub_set_df, figure):
+  print("n_clicks:", n_clicks)
+
+  if n_clicks != None:
+    nn_df = pd.read_json(jsonified_sub_set_df, orient='split')
+    song_id = nn_df.iloc[0]['track_id']
+    # Update key/value pairs in 'layout'
+    layout['title'] = f'Selected song with distance {distance}'
+    layout['scene']['camera'] = dict(center=dict(
+      x=nn_df.iloc[0]['tsne-3d-one'], 
+      y=nn_df.iloc[0]['tsne-3d-two'],
+      z=nn_df.iloc[0]['tsne-3d-three'])
+      )
+    layout['scene']['xaxis'] = dict(range=[min(nn_df['tsne-3d-one']), max(nn_df['tsne-3d-one'])])
+    layout['scene']['yaxis'] = dict(range=[min(nn_df['tsne-3d-two']), max(nn_df['tsne-3d-two'])])
+    layout['scene']['zaxis'] = dict(range=[min(nn_df['tsne-3d-three']), max(nn_df['tsne-3d-three'])])
+    layout['scene']['annotations'] = [dict(
+      showarrow=True,
+      x=nn_df.iloc[0]['tsne-3d-one'],
+      y=nn_df.iloc[0]['tsne-3d-two'],
+      z=nn_df.iloc[0]['tsne-3d-three'],
+      text="Selected Song: {}".format(nn_df.iloc[0]['track_title']),
+      # xanchor="left",
+      # xshift=10,
+      opacity=0.7,
+      arrowcolor="white",
+      )]
+    
+    print("layout:",layout)
+    print()
+    print("trace_set", trace_set)
+    print()
+
+  return {'data': trace_set, 'layout': layout}
+
+
+
 
 
 if __name__ == '__main__':
