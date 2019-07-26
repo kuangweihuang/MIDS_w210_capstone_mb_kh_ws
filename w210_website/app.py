@@ -89,7 +89,7 @@ def gen_tsne_3Dplot(full_set_df, genre_dict, embedding_dir, results_file):
 
   axis_template = {
     'showbackground': True,
-    'backgroundcolor': '#141414',
+    'backgroundcolor': '#171b26',
     }
 
   for i in range(len(genre_dict)):
@@ -160,7 +160,6 @@ app.layout = html.Div(
             'layout': layout,
           }
         ),
-
       ]),
 
     html.Div(className='one-third column app__right__section', 
@@ -172,13 +171,21 @@ app.layout = html.Div(
 
       html.Div(id='current-song',
         children=[
-        html.Label(children='Current Song Selection: '),
-        html.Label(id='current-song-attr', children='-'),
+        html.H6(children='Current Song Selection: '),
+        html.Table(id='current-song-table',
+          children=[
+          html.Tr([html.Th('Title'), html.Th('Artist')])
+          ] + 
+          [
+          html.Tr([
+            html.Td(id='current-song-title', children='-'), 
+            html.Td(id='current-song-artist', children='-')])
+          ])
         ]),
 
-      html.Label(children='Select a filter for Euclidean distance:'),
+      html.H6(children='Select a filter for Euclidean distance:'),
       
-      html.Div(style={'margin-bottom': 40},
+      html.Div(style={'margin-bottom': 25},
         children=[
         dcc.Slider(id='distance-slider',
           min=0,
@@ -191,15 +198,14 @@ app.layout = html.Div(
 
       html.Div(
       children=[
-        html.Div(id='distance-slider-feedback', style = {'display': 'inline-block', 'width': '65%'}),
-        html.Button('Reset', id='reset-plot-button', style={'margin-left': 20}),
+        html.Div(id='distance-slider-feedback', 
+          style = {'display': 'inline-block', 'margin-left': 5, 'width': '65%'}),
+        html.Button('Reset', id='reset-plot-button'),
         ]),      
-
-      
 
       html.Div(id='nearest-songs',
         children=[
-        html.Label(children='Nearest Songs to Current Selection: '),
+        html.H6(children='Nearest Songs to Current Selection: '),
         html.Label(id='nearest-songs-attr', children='-'),
         ]),
 
@@ -227,12 +233,11 @@ app.layout = html.Div(
 # Saving the song data in intermediate div from the clicked data point on TSNE graph
 
 @app.callback(
-  Output('current-song-attr', 'children'),
+  Output('song-info-intermediate', 'children'),
   [Input('TSNE', 'clickData')],
-  [State('full-set-df-intermediate', 'children'),
-  State('song-info-intermediate', 'children')]
+  [State('full-set-df-intermediate', 'children')]
   )
-def display_song_on_click(clickData, jsonified_full_set_df, current_song_info):
+def display_song_on_click(clickData, jsonified_full_set_df):
   full_set_df = pd.read_json(jsonified_full_set_df, orient='split')
 
   if clickData != None:
@@ -245,17 +250,23 @@ def display_song_on_click(clickData, jsonified_full_set_df, current_song_info):
       }
     return json.dumps(updated_song_info)
   else:
-    return current_song_info
+    pass
 
 
-# Test print of clicked song info
+# Display current selection in current song table
 @app.callback(
-  Output('song-info-intermediate', 'children'),
-  [Input('current-song-attr', 'children')]
+  [Output('current-song-title', 'children'),
+  Output('current-song-artist', 'children')],
+  [Input('song-info-intermediate', 'children')]
   )
-def save_song_info(current_song_info):
-  if current_song_info != '-':
-    return current_song_info
+def show_current_song_in_table(current_song_info):
+  try:
+    song_info = json.loads(current_song_info)
+    song_title = json.dumps(song_info['song'])
+    artist_name = json.dumps(song_info['artist'])
+    return song_title, artist_name
+  except:
+    return '-', '-'
 
       
 # Callback of Euclidean distance from the distance slider
@@ -275,10 +286,9 @@ def update_distance_slider_feedback(value):
   Input('distance-slider', 'value')],
   [State('full-set-df-intermediate', 'children')]
   )
-def save_sub_set_df(updated_song_info, distance, jsonified_full_set_df):
-
+def save_sub_set_df(current_song_info, distance, jsonified_full_set_df):
   try:
-    song_info = json.loads(updated_song_info)
+    song_info = json.loads(current_song_info)
     click_song_id = song_info['track_id']
     full_set_dist_temp = pd.read_json(jsonified_full_set_df, orient='split')
     
@@ -345,6 +355,7 @@ current_song_info, figure, original_figure):
       arrowcolor='white',
       )]
   return {'data': trace_set, 'layout': layout}
+
 
 # Callback to reset the filters by reseting the distance slider to max value
 @app.callback(
