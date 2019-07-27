@@ -181,7 +181,7 @@ app.layout = html.Div(
             html.Td(id='current-song-title', children='-'),
             html.Td(id='current-song-artist', children='-')])
           ]),
-        html.Audio(id='current-song-audio', src=audio_link, controls=True),
+        html.Audio(id='current-song-audio', src=audio_link, controls=True, autoPlay=False),
         ]),
 
       html.H6(children='Select a filter for Euclidean distance:'),
@@ -207,7 +207,26 @@ app.layout = html.Div(
       html.Div(id='nearest-songs',
         children=[
         html.H6(children='Nearest Songs to Current Selection: '),
-        html.Label(id='nearest-songs-attr', children='-'),
+        html.Table(id='nn-song-table',
+          children=[
+          html.Tr([html.Th('Title'), html.Th('Artist')])
+          ] +
+          [
+          html.Tr([
+            html.Td(id='nn1-song-title', children='-'),
+            html.Td(id='nn1-song-artist', children='-')])
+          ] +
+          [
+          html.Tr([
+            html.Td(id='nn2-song-title', children='-'),
+            html.Td(id='nn2-song-artist', children='-')])
+          ] +
+          [
+          html.Tr([
+            html.Td(id='nn3-song-title', children='-'),
+            html.Td(id='nn3-song-artist', children='-')])
+          ]),
+        # html.Label(id='nearest-songs-attr', children='-'),
         ]),
 
       ]),
@@ -264,8 +283,8 @@ def display_song_on_click(clickData, jsonified_full_set_df):
 def show_current_song_in_table(current_song_info):
   try:
     song_info = json.loads(current_song_info)
-    song_title = json.dumps(song_info['song'])
-    artist_name = json.dumps(song_info['artist'])
+    song_title = song_info['song']
+    artist_name = song_info['artist']
     song_track_id = json.dumps(song_info['track_id'])
     song_track_id_6digit = song_track_id.zfill(6)
     song_track_id_first3 = song_track_id_6digit[0:3]
@@ -287,12 +306,21 @@ def update_distance_slider_feedback(value):
 # based on selected Euclidean distance and selected song
 @app.callback(
   [Output('sub-set-df-intermediate', 'children'),
-  Output('nearest-songs-attr', 'children')],
+  # Output('nearest-songs-attr', 'children'),
+  Output('nn1-song-title', 'children'),
+  Output('nn1-song-artist', 'children'),
+  Output('nn2-song-title', 'children'),
+  Output('nn2-song-artist', 'children'),
+  Output('nn3-song-title', 'children'),
+  Output('nn3-song-artist', 'children')],
   [Input('song-info-intermediate', 'children'),
   Input('distance-slider', 'value')],
   [State('full-set-df-intermediate', 'children')]
   )
 def save_sub_set_df(current_song_info, distance, jsonified_full_set_df):
+  # Define n, the number of nearest neighbors to show in the table
+  n = 3
+
   try:
     song_info = json.loads(current_song_info)
     click_song_id = song_info['track_id']
@@ -311,10 +339,22 @@ def save_sub_set_df(current_song_info, distance, jsonified_full_set_df):
     # Sending back the song all nearest neighbors
     jsonified_sub_set_df = sub_set_df[:].to_json(orient='split')
 
+    # Getting the song titles and artist names for the nearest n songs 
+    nn_song_titles = []
+    nn_song_artists = []
+    for i in range(1,n+1):
+      nn_song_titles.append(sub_set_df.iloc[i]['track_title'])
+      nn_song_artists.append(sub_set_df.iloc[i]['artist_name'])
+
   except:
     jsonified_sub_set_df = '-'
+    nn_song_titles = ['-' for i in range(n)]
+    nn_song_artists = ['-' for i in range(n)]
 
-  return jsonified_sub_set_df, jsonified_sub_set_df
+  return [jsonified_sub_set_df,
+          nn_song_titles[0], nn_song_artists[0],
+          nn_song_titles[1], nn_song_artists[1],
+          nn_song_titles[2], nn_song_artists[2]]
 
 
 # Callback for updating the TSNE graph
@@ -357,8 +397,38 @@ current_song_info, figure, original_figure):
       y=nn_df.iloc[0]['tsne-3d-two'],
       z=nn_df.iloc[0]['tsne-3d-three'],
       text='Selected Song: {}'.format(nn_df.iloc[0]['track_title']),
-      opacity=0.7,
+      opacity=0.8,
       arrowcolor='white',
+      ), dict(
+      showarrow=True,
+      x=nn_df.iloc[1]['tsne-3d-one'],
+      y=nn_df.iloc[1]['tsne-3d-two'],
+      z=nn_df.iloc[1]['tsne-3d-three'],
+      text='1st Nearest Song: {}'.format(nn_df.iloc[1]['track_title']),
+      font=dict(
+        color='cyan'),
+      opacity=0.8,
+      arrowcolor='cyan',
+      ), dict(
+      showarrow=True,
+      x=nn_df.iloc[2]['tsne-3d-one'],
+      y=nn_df.iloc[2]['tsne-3d-two'],
+      z=nn_df.iloc[2]['tsne-3d-three'],
+      text='2nd Nearest Song: {}'.format(nn_df.iloc[2]['track_title']),
+      font=dict(
+        color='cyan'),
+      opacity=0.8,
+      arrowcolor='cyan',
+      ), dict(
+      showarrow=True,
+      x=nn_df.iloc[3]['tsne-3d-one'],
+      y=nn_df.iloc[3]['tsne-3d-two'],
+      z=nn_df.iloc[3]['tsne-3d-three'],
+      text='2nd Nearest Song: {}'.format(nn_df.iloc[3]['track_title']),
+      font=dict(
+        color='cyan'),
+      opacity=0.8,
+      arrowcolor='cyan',
       )]
   return {'data': trace_set, 'layout': layout}
 
