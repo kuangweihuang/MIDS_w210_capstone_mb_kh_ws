@@ -123,9 +123,9 @@ def gen_tsne_3Dplot(full_set_df, genre_dict, embedding_dir, results_file):
                                  aspectratio = {'x': 1, 'y': 1.2, 'z': 1},
                                  ),
                      legend = dict(itemsizing='constant',
-                                  orientation='h',
+                                  orientation='v',
                                   xanchor='auto',
-                                  yanchor='auto'
+                                  yanchor='top'
                                   ),
                      clickmode= 'select',
                      uirevision= 'same',
@@ -327,24 +327,38 @@ def save_sub_set_df(current_song_info, distance, jsonified_full_set_df):
     full_set_dist_temp = pd.read_json(jsonified_full_set_df, orient='split')
 
     song_tsne = full_set_dist_temp[full_set_dist_temp['track_id']==click_song_id][['tsne-3d-one', 'tsne-3d-two', 'tsne-3d-three']]
-    full_set_tsne = full_set_dist_temp[['tsne-3d-one', 'tsne-3d-two', 'tsne-3d-three']]
 
-    # Getting the distance between all songs and the selected song
-    full_set_dist_temp['song_distance'] = [np.linalg.norm(full_set_tsne.iloc[i]-song_tsne)
-     for i in range(full_set_tsne.shape[0])]
+    # Implementing a pre-filter to reduce processing time of the np.linalg.norm step
+    
+    sub_set_dist_temp = full_set_dist_temp[(
+      full_set_df['tsne-3d-one'].between(song_tsne['tsne-3d-one'].item() - distance, song_tsne['tsne-3d-one'].item() + distance)) & (
+      full_set_df['tsne-3d-two'].between(song_tsne['tsne-3d-two'].item() - distance, song_tsne['tsne-3d-two'].item() + distance)) & (
+      full_set_df['tsne-3d-three'].between(song_tsne['tsne-3d-three'].item() - distance, song_tsne['tsne-3d-three'].item() + distance))
+      ]
 
-    # Getting a sorted subset of the songs which are within the distance in the slider
-    sub_set_df = full_set_dist_temp[full_set_dist_temp['song_distance']
+    sub_set_tsne = sub_set_dist_temp[['tsne-3d-one', 'tsne-3d-two', 'tsne-3d-three']]
+
+    # Getting the distance between all the pre-filtered songs and the selected song
+    sub_set_dist_temp['song_distance'] = sub_set_tsne.apply(
+      lambda x : np.linalg.norm(x - song_tsne), axis=1)
+
+    # Getting a sorted final subset of the songs which are within the distance in the slider
+    sub_set_df = sub_set_dist_temp[sub_set_dist_temp['song_distance']
                                     <= distance].sort_values(by='song_distance')
-    # Sending back the song all nearest neighbors
+    # Sending back the subset nearest neighbors
     jsonified_sub_set_df = sub_set_df[:].to_json(orient='split')
 
     # Getting the song titles and artist names for the nearest n songs 
     nn_song_titles = []
     nn_song_artists = []
     for i in range(1,n+1):
-      nn_song_titles.append(sub_set_df.iloc[i]['track_title'])
-      nn_song_artists.append(sub_set_df.iloc[i]['artist_name'])
+      # Additional try and except in case sub_set is smaller than 3 nearest song
+      try:
+        nn_song_titles.append(sub_set_df.iloc[i]['track_title'])
+        nn_song_artists.append(sub_set_df.iloc[i]['artist_name'])
+      except:
+        nn_song_titles.append('-')
+        nn_song_artists.append('-')
 
   except:
     jsonified_sub_set_df = '-'
@@ -397,8 +411,10 @@ current_song_info, figure, original_figure):
       y=nn_df.iloc[0]['tsne-3d-two'],
       z=nn_df.iloc[0]['tsne-3d-three'],
       text='Selected Song: {}'.format(nn_df.iloc[0]['track_title']),
-      opacity=0.8,
+      opacity=0.7,
       arrowcolor='white',
+      arrowsize=0.5,
+      arrowhead=2,
       ), dict(
       showarrow=True,
       x=nn_df.iloc[1]['tsne-3d-one'],
@@ -407,8 +423,13 @@ current_song_info, figure, original_figure):
       text='1st Nearest Song: {}'.format(nn_df.iloc[1]['track_title']),
       font=dict(
         color='cyan'),
-      opacity=0.8,
+      opacity=0.7,
       arrowcolor='cyan',
+      arrowsize=0.5,
+      arrowhead=2,
+      ax=+25,
+      ay=+75,
+      az=-75,
       ), dict(
       showarrow=True,
       x=nn_df.iloc[2]['tsne-3d-one'],
@@ -417,18 +438,28 @@ current_song_info, figure, original_figure):
       text='2nd Nearest Song: {}'.format(nn_df.iloc[2]['track_title']),
       font=dict(
         color='cyan'),
-      opacity=0.8,
+      opacity=0.7,
       arrowcolor='cyan',
+      arrowsize=0.5,
+      arrowhead=2,
+      ax=-25,
+      ay=+75,
+      az=-75,
       ), dict(
       showarrow=True,
       x=nn_df.iloc[3]['tsne-3d-one'],
       y=nn_df.iloc[3]['tsne-3d-two'],
       z=nn_df.iloc[3]['tsne-3d-three'],
-      text='2nd Nearest Song: {}'.format(nn_df.iloc[3]['track_title']),
+      text='3rd Nearest Song: {}'.format(nn_df.iloc[3]['track_title']),
       font=dict(
         color='cyan'),
-      opacity=0.8,
+      opacity=0.7,
       arrowcolor='cyan',
+      arrowsize=0.5,
+      arrowhead=2,
+      ax=-25,
+      ay=-75,
+      az=+75,
       )]
   return {'data': trace_set, 'layout': layout}
 
