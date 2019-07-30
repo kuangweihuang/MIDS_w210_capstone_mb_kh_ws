@@ -209,22 +209,25 @@ app.layout = html.Div(
         html.H6(children='Nearest Songs to Current Selection: '),
         html.Table(id='nn-song-table',
           children=[
-          html.Tr([html.Th('Title'), html.Th('Artist')])
+          html.Tr([html.Th('Title'), html.Th('Artist')]),
           ] +
           [
           html.Tr([
             html.Td(id='nn1-song-title', children='-'),
-            html.Td(id='nn1-song-artist', children='-')])
+            html.Td(id='nn1-song-artist', children='-')]),
+          html.Audio(id='nn1-song-audio', src=None, controls=True, autoPlay=False)
           ] +
           [
           html.Tr([
             html.Td(id='nn2-song-title', children='-'),
-            html.Td(id='nn2-song-artist', children='-')])
+            html.Td(id='nn2-song-artist', children='-')]),
+          html.Audio(id='nn2-song-audio', src=None, controls=True, autoPlay=False)
           ] +
           [
           html.Tr([
             html.Td(id='nn3-song-title', children='-'),
-            html.Td(id='nn3-song-artist', children='-')])
+            html.Td(id='nn3-song-artist', children='-')]),
+          html.Audio(id='nn3-song-audio', src=None, controls=True, autoPlay=False)
           ]),
         # html.Label(id='nearest-songs-attr', children='-'),
         ]),
@@ -309,10 +312,13 @@ def update_distance_slider_feedback(value):
   # Output('nearest-songs-attr', 'children'),
   Output('nn1-song-title', 'children'),
   Output('nn1-song-artist', 'children'),
+  Output('nn1-song-audio', 'src'),
   Output('nn2-song-title', 'children'),
   Output('nn2-song-artist', 'children'),
+  Output('nn2-song-audio', 'src'),
   Output('nn3-song-title', 'children'),
-  Output('nn3-song-artist', 'children')],
+  Output('nn3-song-artist', 'children'),
+  Output('nn3-song-audio', 'src')],
   [Input('song-info-intermediate', 'children'),
   Input('distance-slider', 'value')],
   [State('full-set-df-intermediate', 'children')]
@@ -329,7 +335,7 @@ def save_sub_set_df(current_song_info, distance, jsonified_full_set_df):
     song_tsne = full_set_dist_temp[full_set_dist_temp['track_id']==click_song_id][['tsne-3d-one', 'tsne-3d-two', 'tsne-3d-three']]
 
     # Implementing a pre-filter to reduce processing time of the np.linalg.norm step
-    
+
     sub_set_dist_temp = full_set_dist_temp[(
       full_set_df['tsne-3d-one'].between(song_tsne['tsne-3d-one'].item() - distance, song_tsne['tsne-3d-one'].item() + distance)) & (
       full_set_df['tsne-3d-two'].between(song_tsne['tsne-3d-two'].item() - distance, song_tsne['tsne-3d-two'].item() + distance)) & (
@@ -348,27 +354,38 @@ def save_sub_set_df(current_song_info, distance, jsonified_full_set_df):
     # Sending back the subset nearest neighbors
     jsonified_sub_set_df = sub_set_df[:].to_json(orient='split')
 
-    # Getting the song titles and artist names for the nearest n songs 
+    # Getting the song titles and artist names for the nearest n songs
     nn_song_titles = []
     nn_song_artists = []
+    nn_song_audio_links = []
     for i in range(1,n+1):
       # Additional try and except in case sub_set is smaller than 3 nearest song
       try:
         nn_song_titles.append(sub_set_df.iloc[i]['track_title'])
         nn_song_artists.append(sub_set_df.iloc[i]['artist_name'])
+        nn_song_track_id_6digit = str(sub_set_df.iloc[i]['track_id']).zfill(6)
+        nn_song_track_id_first3 = str(nn_song_track_id_6digit[0:3])
+        nn_song_audio_link = f'http://people.ischool.berkeley.edu/~weixing/fma_small/{nn_song_track_id_first3}/{nn_song_track_id_6digit}.mp3'
+
+        nn_song_audio_links.append(nn_song_audio_link)
+
+
       except:
         nn_song_titles.append('-')
         nn_song_artists.append('-')
+        nn_song_track_id.append('-')
+
 
   except:
     jsonified_sub_set_df = '-'
     nn_song_titles = ['-' for i in range(n)]
     nn_song_artists = ['-' for i in range(n)]
+    nn_song_audio_links = [None for i in range(n)]
 
   return [jsonified_sub_set_df,
-          nn_song_titles[0], nn_song_artists[0],
-          nn_song_titles[1], nn_song_artists[1],
-          nn_song_titles[2], nn_song_artists[2]]
+          nn_song_titles[0], nn_song_artists[0], nn_song_audio_links[0],
+          nn_song_titles[1], nn_song_artists[1], nn_song_audio_links[1],
+          nn_song_titles[2], nn_song_artists[2], nn_song_audio_links[2],]
 
 
 # Callback for updating the TSNE graph
