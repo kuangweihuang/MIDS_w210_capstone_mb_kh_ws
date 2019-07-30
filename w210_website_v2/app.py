@@ -16,7 +16,7 @@ external_stylesheets = ['https://codepen.io/kuangweihuang/pen/oKZroW.css']
 
 # Set embedding directory and default audio link
 embedding_dir = './data'
-results_file = 'tsne_results_set1_p40'
+results_file = 'tsne_results_set1_p50'
 audio_link = 'http://people.ischool.berkeley.edu/~weixing/fma_small/000/000002.mp3'
 
 genre_dict = {0 : 'Hip-Hop',
