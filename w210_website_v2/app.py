@@ -10,14 +10,13 @@ import json
 import plotly
 import plotly.graph_objs as go
 import plotly.express as px
-import plotly.figure_factory as ff
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
+external_stylesheets = ['https://codepen.io/kuangweihuang/pen/oKZroW.css']
+# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 # Set embedding directory and default audio link
 embedding_dir = './data'
-results_file = 'tsne_results_set1_p50'
+results_file = 'tsne_results_set1_p40'
 audio_link = 'http://people.ischool.berkeley.edu/~weixing/fma_small/000/000002.mp3'
 
 genre_dict = {0 : 'Hip-Hop',
@@ -90,7 +89,7 @@ def gen_tsne_3Dplot(full_set_df, genre_dict, embedding_dir, results_file):
 
   axis_template = {
     'showbackground': True,
-    'backgroundcolor': '#171b26',
+    'backgroundcolor': '#1c1e2f',
     }
 
   for i in range(len(genre_dict)):
@@ -150,7 +149,7 @@ app.layout = html.Div(
     html.Div(className='two-thirds column app__left__section',
       children=[
 
-      html.H2(
+      html.H2(style={'padding-left': 30},
         children='Exploring Free Music Archive with Song Embeddings'
         ),
 
@@ -179,14 +178,14 @@ app.layout = html.Div(
           [
           html.Tr([
             html.Td(id='current-song-title', children='-'),
-            html.Td(id='current-song-artist', children='-')])
-          ]),
-        html.Audio(id='current-song-audio', src=audio_link, controls=True, autoPlay=False),
+            html.Td(id='current-song-artist', children='-')]),
+          html.Audio(id='current-song-audio', src=audio_link, controls=True, autoPlay=False)
+         ]),
         ]),
 
       html.H6(children='Select a filter for Euclidean distance:'),
 
-      html.Div(style={'margin-bottom': 25},
+      html.Div(style={'margin-bottom': 25, 'padding-right': 20},
         children=[
         dcc.Slider(id='distance-slider',
           min=0,
