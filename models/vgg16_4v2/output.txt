@@ -1,0 +1,165 @@
+Directory of model parameters to be saved: ./models/vgg16_4v2
+
+C:\Users\kw.UNLOVEDPC\Anaconda3\envs\py3gpu-Env\lib\site-packages\ipykernel_launcher.py:36: UserWarning: Update your `Model` call to the Keras 2 API: `Model(inputs=Tensor("in..., outputs=Tensor("de...)`
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_1 (InputLayer)         (None, 431, 128, 3)       0         
+_________________________________________________________________
+block1_conv1 (Conv2D)        (None, 431, 128, 64)      1792      
+_________________________________________________________________
+block1_conv2 (Conv2D)        (None, 431, 128, 64)      36928     
+_________________________________________________________________
+block1_pool (MaxPooling2D)   (None, 215, 64, 64)       0         
+_________________________________________________________________
+block2_conv1 (Conv2D)        (None, 215, 64, 128)      73856     
+_________________________________________________________________
+block2_conv2 (Conv2D)        (None, 215, 64, 128)      147584    
+_________________________________________________________________
+block2_pool (MaxPooling2D)   (None, 107, 32, 128)      0         
+_________________________________________________________________
+block3_conv1 (Conv2D)        (None, 107, 32, 256)      295168    
+_________________________________________________________________
+block3_conv2 (Conv2D)        (None, 107, 32, 256)      590080    
+_________________________________________________________________
+block3_conv3 (Conv2D)        (None, 107, 32, 256)      590080    
+_________________________________________________________________
+block3_pool (MaxPooling2D)   (None, 53, 16, 256)       0         
+_________________________________________________________________
+block4_conv1 (Conv2D)        (None, 53, 16, 512)       1180160   
+_________________________________________________________________
+block4_conv2 (Conv2D)        (None, 53, 16, 512)       2359808   
+_________________________________________________________________
+block4_conv3 (Conv2D)        (None, 53, 16, 512)       2359808   
+_________________________________________________________________
+block4_pool (MaxPooling2D)   (None, 26, 8, 512)        0         
+_________________________________________________________________
+block5_conv1 (Conv2D)        (None, 26, 8, 512)        2359808   
+_________________________________________________________________
+block5_conv2 (Conv2D)        (None, 26, 8, 512)        2359808   
+_________________________________________________________________
+block5_conv3 (Conv2D)        (None, 26, 8, 512)        2359808   
+_________________________________________________________________
+block5_pool (MaxPooling2D)   (None, 13, 4, 512)        0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 26624)             0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                1704000   
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 32)                2080      
+_________________________________________________________________
+dense_3 (Dense)              (None, 8)                 264       
+=================================================================
+Total params: 16,421,032
+Trainable params: 8,785,768
+Non-trainable params: 7,635,264
+_________________________________________________________________
+None
+Training...
+Train on 12788 samples, validate on 1600 samples
+Epoch 1/25
+12788/12788 [==============================] - 82s 6ms/step - loss: 3.7036 - acc: 0.1679 - val_loss: 3.5441 - val_acc: 0.1825
+
+Epoch 00001: val_acc improved from -inf to 0.18250, saving model to ./models/vgg16_4v2/weights.best.h5
+Epoch 2/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 3.3572 - acc: 0.2281 - val_loss: 3.1577 - val_acc: 0.3325
+
+Epoch 00002: val_acc improved from 0.18250 to 0.33250, saving model to ./models/vgg16_4v2/weights.best.h5
+Epoch 3/25
+12788/12788 [==============================] - 82s 6ms/step - loss: 2.9405 - acc: 0.3509 - val_loss: 2.7216 - val_acc: 0.4062
+
+Epoch 00003: val_acc improved from 0.33250 to 0.40625, saving model to ./models/vgg16_4v2/weights.best.h5
+Epoch 4/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 2.5889 - acc: 0.4401 - val_loss: 2.4419 - val_acc: 0.4862
+
+Epoch 00004: val_acc improved from 0.40625 to 0.48625, saving model to ./models/vgg16_4v2/weights.best.h5
+Epoch 5/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 2.3145 - acc: 0.5013 - val_loss: 2.1903 - val_acc: 0.5306
+
+Epoch 00005: val_acc improved from 0.48625 to 0.53063, saving model to ./models/vgg16_4v2/weights.best.h5
+Epoch 6/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 2.0965 - acc: 0.5375 - val_loss: 2.0500 - val_acc: 0.5494
+
+Epoch 00006: val_acc improved from 0.53063 to 0.54937, saving model to ./models/vgg16_4v2/weights.best.h5
+Epoch 7/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 1.9031 - acc: 0.5705 - val_loss: 2.0157 - val_acc: 0.5188
+
+Epoch 00007: val_acc did not improve from 0.54937
+Epoch 8/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 1.7417 - acc: 0.5983 - val_loss: 1.8488 - val_acc: 0.5506
+
+Epoch 00008: val_acc improved from 0.54937 to 0.55063, saving model to ./models/vgg16_4v2/weights.best.h5
+Epoch 9/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 1.5885 - acc: 0.6274 - val_loss: 1.8558 - val_acc: 0.5231
+
+Epoch 00009: val_acc did not improve from 0.55063
+Epoch 10/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 1.4598 - acc: 0.6508 - val_loss: 1.7866 - val_acc: 0.5406
+
+Epoch 00010: val_acc did not improve from 0.55063
+Epoch 11/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 1.3331 - acc: 0.6816 - val_loss: 1.7884 - val_acc: 0.5419
+
+Epoch 00011: val_acc did not improve from 0.55063
+Epoch 12/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 1.2005 - acc: 0.7171 - val_loss: 1.8263 - val_acc: 0.5425
+
+Epoch 00012: val_acc did not improve from 0.55063
+Epoch 13/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 1.1059 - acc: 0.7407 - val_loss: 1.7916 - val_acc: 0.5587
+
+Epoch 00013: val_acc improved from 0.55063 to 0.55875, saving model to ./models/vgg16_4v2/weights.best.h5
+Epoch 14/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 1.0021 - acc: 0.7708 - val_loss: 2.0596 - val_acc: 0.5181
+
+Epoch 00014: val_acc did not improve from 0.55875
+Epoch 15/25
+12788/12788 [==============================] - 81s 6ms/step - loss: 0.9353 - acc: 0.7874 - val_loss: 2.0699 - val_acc: 0.5162
+
+Epoch 00015: val_acc did not improve from 0.55875
+Epoch 16/25
+12788/12788 [==============================] - 83s 6ms/step - loss: 0.8696 - acc: 0.8116 - val_loss: 2.2414 - val_acc: 0.5188
+
+Epoch 00016: val_acc did not improve from 0.55875
+
+Epoch 00016: ReduceLROnPlateau reducing learning rate to 0.0005000000237487257.
+Epoch 17/25
+12788/12788 [==============================] - 82s 6ms/step - loss: 0.6470 - acc: 0.8883 - val_loss: 2.4089 - val_acc: 0.5312
+
+Epoch 00017: val_acc did not improve from 0.55875
+Epoch 18/25
+12788/12788 [==============================] - 82s 6ms/step - loss: 0.5169 - acc: 0.9249 - val_loss: 2.5424 - val_acc: 0.5244
+
+Epoch 00018: val_acc did not improve from 0.55875
+Epoch 19/25
+12788/12788 [==============================] - 82s 6ms/step - loss: 0.4476 - acc: 0.9428 - val_loss: 2.8553 - val_acc: 0.5238
+
+Epoch 00019: val_acc did not improve from 0.55875
+Epoch 20/25
+12788/12788 [==============================] - 83s 6ms/step - loss: 0.4004 - acc: 0.9589 - val_loss: 3.0474 - val_acc: 0.5281
+
+Epoch 00020: val_acc did not improve from 0.55875
+Epoch 21/25
+12788/12788 [==============================] - 82s 6ms/step - loss: 0.3634 - acc: 0.9666 - val_loss: 2.9632 - val_acc: 0.5269
+
+Epoch 00021: val_acc did not improve from 0.55875
+Epoch 22/25
+
+12788/12788 [==============================] - 82s 6ms/step - loss: 0.3445 - acc: 0.9686 - val_loss: 2.9823 - val_acc: 0.5150
+
+Epoch 00022: val_acc did not improve from 0.55875
+Epoch 23/25
+12788/12788 [==============================] - 83s 6ms/step - loss: 0.3294 - acc: 0.9715 - val_loss: 3.1087 - val_acc: 0.5206
+
+Epoch 00023: val_acc did not improve from 0.55875
+Epoch 24/25
+12788/12788 [==============================] - 83s 6ms/step - loss: 0.3058 - acc: 0.9769 - val_loss: 3.2587 - val_acc: 0.5256oss: 0.3058 - acc
+
+Epoch 00024: val_acc did not improve from 0.55875
+Epoch 25/25
+12788/12788 [==============================] - 83s 6ms/step - loss: 0.2823 - acc: 0.9805 - val_loss: 3.2129 - val_acc: 0.5262
+
+Epoch 00025: val_acc did not improve from 0.55875
