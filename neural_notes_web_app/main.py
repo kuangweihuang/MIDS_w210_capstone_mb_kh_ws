@@ -22,7 +22,8 @@ external_stylesheets = ['./static/darkstyle.css']
 # embedding_dir = 'http://people.ischool.berkeley.edu/~kuangwei/w210_music_project/data'
 embedding_dir = './data'
 
-results_file = 'tsne_results_set1_p50'
+#results_file = 'tsne_results_set1_p50'
+results_file = 'tsne_results_with_famous_p50'
 audio_link = 'http://people.ischool.berkeley.edu/~weixing/fma_small/000/000002.mp3'
 
 github_link = 'https://github.com/kuangweihuang/MIDS_w210_capstone_mb_kh_ws'
@@ -36,11 +37,12 @@ genre_dict = {0 : 'Hip-Hop',
               4 : 'Rock',
               5 : 'International',
               6 : 'Electronic',
-              7 : 'Instrumental'}
+              7 : 'Instrumental',
+              8 : 'Famous'}
 
 # Reading in the full_set_df_collapse_header.csv file
-full_set_df = pd.read_csv('{}/full_set_df_collapse_header.csv'.format(embedding_dir), sep=',', index_col=0)
-
+# full_set_df = pd.read_csv('{}/full_set_df_collapse_header.csv'.format(embedding_dir), sep=',', index_col=0)
+full_set_df = pd.read_csv('{}/full_set_with_famous_df_collapse_header.csv'.format(embedding_dir), sep=',', index_col=0)
 
 def load_tsne_results(full_set_df, embedding_dir, results_file):
   '''
@@ -106,23 +108,41 @@ def gen_tsne_3Dplot(full_set_df, genre_dict, embedding_dir, results_file):
     }
 
   for i in range(len(genre_dict)):
+        if(genre_dict[i] != 'Famous'):
 
-      trace_set.append(go.Scatter3d(x=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-one'],
-                                    y=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-two'],
-                                    z=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-three'],
-                                    mode='markers', name=genre_dict[i],
-                                    hovertemplate = '<i>Track ID</i>: %{text}'
-                                                    '<br><i>x</i>: %{x}'
-                                                    '<br><i>y</i>: %{y}'
-                                                    '<br><i>z</i>: %{z}',
-                                    marker=dict(size=3,
-                                                line=dict(width=0.1),
-                                                color=genre_colors[i],
-                                                opacity=1),
-                                    text = full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_id']
-                                    #      full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_title']
-                                   )
-                      )
+              trace_set.append(go.Scatter3d(x=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-one'],
+                                            y=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-two'],
+                                            z=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-three'],
+                                            mode='markers', name=genre_dict[i],
+                                            hovertemplate = '<i>Track ID</i>: %{text}'
+                                                            '<br><i>x</i>: %{x}'
+                                                            '<br><i>y</i>: %{y}'
+                                                            '<br><i>z</i>: %{z}',
+                                            marker=dict(size=3,
+                                                        line=dict(width=0.1),
+                                                        color=genre_colors[i],
+                                                        opacity=1),
+                                            text = full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_id']
+                                            #      full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_title']
+                                           )
+                              )
+        else:
+              trace_set.append(go.Scatter3d(x=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-one'],
+                                            y=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-two'],
+                                            z=full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['tsne-3d-three'],
+                                            mode='markers', name=genre_dict[i],
+                                            hovertemplate = '<i>Track ID</i>: %{text}'
+                                                            '<br><i>x</i>: %{x}'
+                                                            '<br><i>y</i>: %{y}'
+                                                            '<br><i>z</i>: %{z}',
+                                            marker=dict(size=4,
+                                                        line=dict(width=0.1),
+                                                        color='white',
+                                                        opacity=1),
+                                            text = full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_id']
+                                            #      full_set_df[full_set_df['track_genre_top']==genre_dict[i]]['track_title']
+                                           )
+                              )
 
   layout = go.Layout(margin=dict(l=50, r=0, b=0, t=50),
                      title= 'T-SNE 3D Scatter Plot of Song Embeddings',
