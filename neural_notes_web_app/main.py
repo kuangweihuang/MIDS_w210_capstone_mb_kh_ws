@@ -25,6 +25,10 @@ embedding_dir = './data'
 results_file = 'tsne_results_set1_p50'
 audio_link = 'http://people.ischool.berkeley.edu/~weixing/fma_small/000/000002.mp3'
 
+github_link = 'https://github.com/kuangweihuang/MIDS_w210_capstone_mb_kh_ws'
+info_webpage_link = 'http://people.ischool.berkeley.edu/~weixing/w210_website_v2.1/'
+project_page_link = 'https://www.ischool.berkeley.edu/projects/2019/neural-notes'
+
 genre_dict = {0 : 'Hip-Hop',
               1 : 'Pop',
               2 : 'Folk',
@@ -249,6 +253,17 @@ app.layout = html.Div(children=[
 
         ]),
 
+      ]),
+
+    html.Div(id='bottom-bar', style = {'display': 'inline-block', 'padding-left': 50},
+      children=[
+      html.Div('Neural Notes is built by Madeleine Bulkow, Kuangwei Huang, and Weixing Sun as a MIDS Summer 2019 Capstone Project'),
+      html.H6('Links:', style = {'padding-right': 30, 'display': 'inline-block'}),
+      html.A('Informational Webpage', href=info_webpage_link, target='_blank'),
+      html.Div('|', style = {'padding-left': 20, 'padding-right': 20, 'display': 'inline-block'}),
+      html.A('MIDS Project Page', href=project_page_link, target='_blank'),
+      html.Div('|', style = {'padding-left': 20, 'padding-right': 20, 'display': 'inline-block'}),
+      html.A('GitHub repo', href=github_link, target="_blank"),
       ]),
 
     # Intermediate Hidden Divs for passing data
